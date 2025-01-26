@@ -1,0 +1,29 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+.env
+*venv
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# React
+node_modules/
+build/
+npm-debug.log
+yarn-error.log
+
+# CSS
+*.css.map
+
+# IDE
+.vscode/
