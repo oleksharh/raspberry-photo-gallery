@@ -1,20 +1,20 @@
 from gallery.models import Album, Photo, Video
-from gallery.serializers import AlbumSerializer, PhotoSerializer, VideoSerializer
+from gallery.serializers import AlbumSerializer, PhotoSerializer, VideoSerializer, UserSerializer
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework import permissions
 
 
-# class UserList(generics.ListAPIView):
-#     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class UserList(generics.ListAPIView):
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
-# class UserDetail(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class AlbumListCreate(generics.ListCreateAPIView):
