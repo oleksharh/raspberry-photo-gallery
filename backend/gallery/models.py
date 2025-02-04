@@ -11,22 +11,31 @@ class Album(models.Model):
         ordering = ['-created']
 
 
-class Photo(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='photos')
-    file_path = models.CharField()
+# class Photo(models.Model):
+#     album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='photos')
+#     file = models.CharField()
+#     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         ordering = ['-uploaded_at']
+
+# class Video(models.Model):
+#     album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='videos')
+#     file = models.CharField()
+#     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+#     uploaded_at = models.DateTimeField(auto_now_add=True)
+#     duration = models.DurationField()
+
+#     class Meta:
+#         ordering = ['-uploaded_at', 'duration']
+
+
+class Media(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='media')
+    file = models.FileField(upload_to='media/')
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-uploaded_at']
-
-class Video(models.Model):
-    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='videos')
-    file_path = models.CharField()
-    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    duration = models.DurationField()
-
-    class Meta:
-        ordering = ['-uploaded_at', 'duration']
-

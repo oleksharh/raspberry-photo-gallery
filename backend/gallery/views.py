@@ -1,18 +1,12 @@
-from gallery.models import Album, Photo, Video
-from gallery.serializers import AlbumSerializer, PhotoSerializer, VideoSerializer, UserSerializer
+from gallery.models import Album, Media
+from gallery.serializers import AlbumSerializer, MediaSerializer, UserSerializer
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class UserList(generics.ListAPIView):
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -31,25 +25,33 @@ class AlbumDetail(generics.RetrieveUpdateAPIView):
     # TODO: Add permission to allow only the admin to delete an album
 
 
-class PhotoList(generics.ListAPIView):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer
+class MediaList(generics.ListCreateAPIView):
+    queryset = Media.objects.all()
+    serializer_class = MediaSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+class MediaDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Media.objects.all()
+    serializer_class = MediaSerializer
+
+class MediaCreate(generics.CreateAPIView):
+    queryset = Media.objects.all()
+    serializer_class = MediaSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 
-class PhotoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer
-    # NOTE: Only admin and owner can delete a photo, i.e. superuser and the user who uploaded the photo
-    # TODO: Add permission to allow only the owner or admin to delete a photo
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from gallery.permissions import IsAlbumSharedWith
 
+class AlbumDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAlbumSharedWith]
 
-class VideoListCreate(generics.ListCreateAPIView):
-    queryset = Video.objects.all()
-    serializer_class = VideoSerializer
-
-
-class VideoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Video.objects.all()
-    serializer_class = VideoSerializer
-    # NOTE: Only admin and owner can delete a video, i.e. superuser and the user who uploaded the video
-    # TODO: Add permission to allow only the owner or admin to delete a video
+    def get(self, request, album_id):
+        try:
+            album = Album.objects.get(id=album_id)
+            self.check_object_permissions(request, album)  # Ensure user has permission
+            return Response({'name': album.name, 'description': album.description})
+        except Album.DoesNotExist:
+            return Response({'error': 'Album not found'}, status=status.HTTP_404_NOT_FOUND)

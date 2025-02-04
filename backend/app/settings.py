@@ -138,5 +138,19 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Ensure this is present
+    ],
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 524288000  # 500MB
+
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
