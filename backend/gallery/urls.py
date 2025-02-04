@@ -3,6 +3,7 @@ from gallery import views
 
 urlpatterns = [
     path('users/', views.UserList.as_view(), name='user-list'),
+    path('user/<int:pk>/', views.UserDetail.as_view(), name='user-detail'),
     path('albums/', views.AlbumListCreate.as_view(), name='album-list'),
     path('album/<int:album_id>/', views.AlbumDetailView.as_view(), name='album-detail'),
     path('media/', views.MediaList.as_view(), name='media-list'),
