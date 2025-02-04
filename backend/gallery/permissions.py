@@ -5,7 +5,7 @@ class IsAlbumSharedWith(permissions.BasePermission):
     """
     Custom permission to allow access only to users an album is shared with.
     """
-
+    
     def has_permission(self, request, view):
         # Allow authenticated users to check object-level permission
         return request.user and request.user.is_authenticated

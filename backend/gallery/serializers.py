@@ -2,23 +2,14 @@ from rest_framework import serializers
 from gallery.models import Album, Media
 from django.contrib.auth.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username']
 
-# TODO: CHECK SOME TUTORIALS ON HOW DJANGO REST FRAMEWORK WORKS, BECAUSE I AM NOT SURE IF THIS IS THE RIGHT WAY TO DO IT
-# USERSERUIALIZER should work in views when listing, but it didn't change the model's meta in the db itself
-# SHOULD WORK WITH gallery_album_shared_with table that connects user and album, have no clue how to implement it though
 
-
-# class AlbumSerializer(serializers.ModelSerializer):
-#     shared_with = UserSerializer(many=True, read_only=True)
-
-#     class Meta:
-#         model = Album
-#         fields = '__all__'
-
+# Custom validator to ensure only certain file types are uploaded
 def validate_file(value):
     allowed_types = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg']
     
@@ -26,6 +17,7 @@ def validate_file(value):
         raise serializers.ValidationError("Unsupported file type.")
     
     return value
+
 
 class MediaSerializer(serializers.ModelSerializer):
     file = serializers.FileField(validators=[validate_file])
