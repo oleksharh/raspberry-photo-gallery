@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import serializers
 from gallery.models import Album, Media
 from django.contrib.auth.models import User
@@ -18,21 +20,40 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 # Custom validator to ensure only certain file types are uploaded
-def validate_file(value):
-    allowed_types = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg']
-    
-    # Check if the file type is allowed
-    if hasattr(value, 'content_type') and value.content_type not in allowed_types:
-        raise serializers.ValidationError("Unsupported file type.")
-    
-    return value
 
 class MediaSerializer(serializers.ModelSerializer):
-    file = serializers.FileField(validators=[validate_file])  # Validate file type
+    # file = serializers.FileField(validators=[self.validate_file])  # Validate file type
 
     class Meta:
         model = Media
-        fields = '__all__'  # Include all fields from the Media model
+        fields = ['album', 'file']  # Include all fields from the Media model
+
+    def validate_file(self, value):
+        allowed_types = {
+            'image': {'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heif', 'image/heic'},
+            'video': {'video/mp4', 'video/avi', 'video/mkv', 'video/webm'},
+        }
+        
+        file_type = value.content_type.split('/')[0]  # Extract 'image' or 'video'
+        
+        if value.content_type not in allowed_types.get(file_type, set()):
+            raise serializers.ValidationError("Unsupported file type.")
+
+        return value
+    
+    def create(self, validated_data):
+        request = self.context.get('request')
+        file = validated_data.get('file')
+
+        # Auto-detect media_type from file content type
+        media_type = file.content_type.split('/')[0]
+        validated_data['media_type'] = media_type
+        
+        # Auto-assign uploaded_by from request.user
+        validated_data['uploaded_by'] = request.user if request and request.user.is_authenticated else None
+
+        return super().create(validated_data)
+
 
 
 class AlbumSerializer(serializers.ModelSerializer):
