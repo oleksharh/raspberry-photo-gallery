@@ -43,6 +43,3 @@ class Media(models.Model):
 
     class Meta:
         ordering = ['-uploaded_at']
-
-# TODO: Add subdivision of media when stored in the database as well in the album
-# when accessed. media/videos, media/images and album has two folders when being viewed
