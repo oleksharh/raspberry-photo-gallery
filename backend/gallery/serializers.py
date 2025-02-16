@@ -22,11 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 # Custom validator to ensure only certain file types are uploaded
 
 class MediaSerializer(serializers.ModelSerializer):
-    # file = serializers.FileField(validators=[self.validate_file])  # Validate file type
-
+    uploaded_at = serializers.SerializerMethodField()
+    
     class Meta:
         model = Media
-        fields = ['album', 'file']  # Include all fields from the Media model
+        fields = ['album', 'file', 'uploaded_at']  # Include all fields from the Media model
 
     def validate_file(self, value):
         allowed_types = {
@@ -40,6 +40,9 @@ class MediaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Unsupported file type.")
 
         return value
+    
+    def get_uploaded_at(self, obj):
+        return obj.uploaded_at.strftime('%Y-%m-%dT%H:%M:%SZ')
     
     def create(self, validated_data):
         request = self.context.get('request')
